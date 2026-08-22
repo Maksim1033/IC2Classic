@@ -1,8 +1,8 @@
+# Industrial Craft Classic 1.20.1
+
 <div align="right">
   <strong>🇬🇧 English</strong> | <a href="README.ru.md">🇷🇺 Русский</a>
 </div>
-
-# Industrial Craft Classic 1.20.1
 
 <img src="https://img.shields.io/badge/Minecraft-1.20.1-green?style=flat-square" alt="Minecraft 1.20.1">
 <img src="https://img.shields.io/badge/Forge-1.20.1-orange?style=flat-square" alt="Forge 1.20.1">
