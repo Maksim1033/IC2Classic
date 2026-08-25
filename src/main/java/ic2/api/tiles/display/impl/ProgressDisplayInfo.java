@@ -10,7 +10,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mojang.math.Matrix4f;
+import org.joml.Matrix4f;
 
 import ic2.api.tiles.display.IDisplayInfo;
 import ic2.api.tiles.display.IMonitorRenderer;
@@ -62,7 +62,7 @@ public class ProgressDisplayInfo implements IDisplayInfo
 			drawColorFrame(stack, builder, x+i+1, y+1, 1F, fontHeight-1, i % 2 == 0 ? color : progress.secondaryColor);
 		}
 		RenderSystem.enableDepthTest();
-		RenderSystem.disableTexture();
+		// RenderSystem.disableTexture();
 		RenderSystem.setShader(GameRenderer::getPositionColorShader);
 		tes.end();
 	}

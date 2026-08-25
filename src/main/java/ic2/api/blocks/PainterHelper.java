@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
 
 /***
- * 
+ *
  * @author Speiger
  * Forge no longer supports painting of Blocks.
  * This helper class has a Manual Implementation of each Block in minecraft/IC2Classic.
@@ -47,7 +47,7 @@ public class PainterHelper
 	public static DyeableMap TERRACOTTA;
 	public static DyeableMap GLAZED_TERRACOTTA;
 	public static DyeableMap SHULKER;
-	
+
 	public static void init()
 	{
 		INSTANCE.registerPaintHelper((BEDS = getBedColors()).getBlocks(), new BedPainter());
@@ -62,18 +62,18 @@ public class PainterHelper
 		INSTANCE.registerPaintHelper((TERRACOTTA = getTerracottaColors()), DEFAULT_MAPPER);
 		INSTANCE.registerPaintHelper((WOOL = getWoolColors()), DEFAULT_MAPPER);
 	}
-	
+
 	/**
 	 * Bulk Function to register a DyeableMap with a function that replies the data from a old to the new BlockStates
 	 * A Dyeable Map is Basically a Map<DyeColor, Block> and a reverse one.
-	 * @param map the list of blocks and their related Colors 
+	 * @param map the list of blocks and their related Colors
 	 * @param mapper data copy function that applies the data from the old state to the new one, minus the color of-course
 	 */
 	public void registerPaintHelper(DyeableMap map, BiFunction<BlockState, BlockState, BlockState> mapper)
 	{
 		registerPaintHelper(map.getBlocks(), new Colorable(map, mapper));
 	}
-	
+
 	/**
 	 * Function to register a Block that also implements IPaintable
 	 * @param <T> generic type
@@ -83,7 +83,7 @@ public class PainterHelper
 	{
 		paintable.put(entry, entry);
 	}
-	
+
 	/**
 	 * Function to register a Paintable handler for a collection of Blocks
 	 * @param blocks the blocks that should be handled by the PaintHelper
@@ -96,7 +96,7 @@ public class PainterHelper
 			paintable.put(block, helper);
 		}
 	}
-	
+
 	/**
 	 * Function to register a Paintable handler for a Blocks
 	 * @param block the block that should be handled by the PaintHelper
@@ -106,7 +106,7 @@ public class PainterHelper
 	{
 		paintable.put(block, helper);
 	}
-	
+
 	/**
 	 * Gets the PaintHandler info a Specific Block
 	 * @param block the block that the PaintHandler should be retrieved from
@@ -117,7 +117,7 @@ public class PainterHelper
 		IPaintable paint = paintable.get(block);
 		return paint == null ? (block instanceof IPaintable paintable ? paintable : null) : paint;
 	}
-	
+
 	/**
 	 * Gets the PaintHandler info a Specific BlockState
 	 * @param state the state that the PaintHandler should be retrieved from
@@ -127,7 +127,7 @@ public class PainterHelper
 	{
 		return getPaintable(state.getBlock());
 	}
-	
+
 	/**
 	 * Helper function that returns the Color of a Block if it colored.
 	 * @param state the state you want the color from
@@ -138,10 +138,10 @@ public class PainterHelper
 		IPaintable paint = getPaintable(state);
 		return paint == null ? null : paint.getColor(state);
 	}
-	
+
 	/**
 	 * @author Speiger
-	 * 
+	 *
 	 * Interface to paint a Block into another color.
 	 * Since forge no longer supports the Re-painting of a Block this now replaces it.
 	 */
@@ -158,7 +158,7 @@ public class PainterHelper
 		 * @return true if anything has changed, otherwise false
 		 */
 		boolean recolor(BlockState state, Level world, BlockPos pos, Vec3 exactClick, Direction dir, DyeColor color);
-		
+
 		/**
 		 * Function to get the color of the Block, May return null
 		 * @param state of the color is requested from
@@ -166,37 +166,37 @@ public class PainterHelper
 		 */
 		DyeColor getColor(BlockState state);
 	}
-	
+
 	public static class SignPainter implements IPaintable {
-		
+
 		@Override
 		public boolean recolor(BlockState state, Level world, BlockPos pos, Vec3 exactClick, Direction dir, DyeColor color) {
 			BlockEntity tileEntity = world.getBlockEntity(pos);
 			if(tileEntity instanceof SignBlockEntity) {
 				SignBlockEntity signEntity = (SignBlockEntity) tileEntity;
-				if(signEntity.getColor() != color)
+				if(signEntity.getFrontText().getColor() != color)
 				{
-					signEntity.setColor(color);
+					signEntity.getFrontText().setColor(color);
 				}
 				return true;
 			}
 			return false;
 		}
-		
+
 		@Override
 		public DyeColor getColor(BlockState state) {
 			return null;
 		}
-		
+
 	}
-	
+
 	public static class ShulkerPainter extends Colorable
 	{
 		public ShulkerPainter()
 		{
 			super(getShulkerColors(), null);
 		}
-		
+
 		@Override
 		public boolean recolor(BlockState state, Level world, BlockPos pos, Vec3 exactClick, Direction dir, DyeColor color)
 		{
@@ -228,15 +228,15 @@ public class PainterHelper
 			return false;
 		}
 	}
-	
+
 	public static class BedPainter extends Colorable
 	{
-		
+
 		public BedPainter()
 		{
 			super(getBedColors(), null);
 		}
-		
+
 		@Override
 		public boolean recolor(BlockState state, Level world, BlockPos pos, Vec3 exactClick, Direction dir, DyeColor color)
 		{
@@ -257,18 +257,18 @@ public class PainterHelper
 			return true;
 		}
 	}
-	
+
 	public static class Colorable implements IPaintable
 	{
 		DyeableMap map;
 		BiFunction<BlockState, BlockState, BlockState> mapper;
-		
+
 		public Colorable(DyeableMap map, BiFunction<BlockState, BlockState, BlockState> mapper)
 		{
 			this.map = map;
 			this.mapper = mapper;
 		}
-		
+
 		@Override
 		public boolean recolor(BlockState state, Level world, BlockPos pos, Vec3 exactClick, Direction dir, DyeColor color)
 		{
@@ -280,14 +280,14 @@ public class PainterHelper
 			Block block = map.getBlock(color);
 			return block != null && world.setBlockAndUpdate(pos, mapper.apply(state, block.defaultBlockState()));
 		}
-		
+
 		@Override
 		public DyeColor getColor(BlockState state)
 		{
 			return map.getColor(state.getBlock());
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static <T extends Property<V>, V extends Comparable<V>> BlockState copyProperties(BlockState source, BlockState target)
 	{
@@ -300,7 +300,7 @@ public class PainterHelper
 		}
 		return target;
 	}
-	
+
 	private static DyeableMap getWoolColors()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -322,7 +322,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_WOOL, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getTerracottaColors()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -344,7 +344,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_TERRACOTTA, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getGlazedTerracottaColors()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -366,7 +366,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_GLAZED_TERRACOTTA, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getConcreteColor()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -388,7 +388,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_CONCRETE, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getConcreteDustColor()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -410,7 +410,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_CONCRETE_POWDER, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getShulkerColors()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -432,7 +432,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_SHULKER_BOX, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getBedColors()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -454,7 +454,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_BED, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	public static List<Block> getSigns()
 	{
 		List<Block> signs = new ObjectArrayList<>();
@@ -476,7 +476,7 @@ public class PainterHelper
 		signs.add(Blocks.WARPED_WALL_SIGN);
 		return signs;
 	}
-	
+
 	private static DyeableMap getGlassColors()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -498,7 +498,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_STAINED_GLASS, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getGlassPaneColors()
 	{
 		DyeableMap colors = new DyeableMap();
@@ -520,7 +520,7 @@ public class PainterHelper
 		colors.addBlock(Blocks.BLACK_STAINED_GLASS_PANE, DyeColor.BLACK);
 		return colors;
 	}
-	
+
 	private static DyeableMap getCarpetColors()
 	{
 		DyeableMap colors = new DyeableMap();

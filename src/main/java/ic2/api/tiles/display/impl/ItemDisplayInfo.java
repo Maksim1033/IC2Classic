@@ -4,7 +4,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix3f;
+import org.joml.Matrix3f;
 
 import ic2.api.tiles.display.IDisplayInfo;
 import ic2.api.tiles.display.IMonitorRenderer;
@@ -21,14 +21,14 @@ public class ItemDisplayInfo implements IDisplayInfo
 	boolean showCount;
 	Supplier<ItemStack> itemProvider;
 	BooleanSupplier aliveProvider;
-	
+
 	public ItemDisplayInfo(FriendlyByteBuf buffer)
 	{
 		showCount = buffer.readBoolean();
 		item = buffer.readItem();
 		if(showCount) item.setCount(buffer.readVarInt());
 	}
-	
+
 	public ItemDisplayInfo(boolean showCount, Supplier<ItemStack> itemProvider, BooleanSupplier aliveProvider)
 	{
 		this.showCount = showCount;
@@ -41,7 +41,7 @@ public class ItemDisplayInfo implements IDisplayInfo
 	public void render(PoseStack stack, int x, int y, int width, int height, Alignment align, IMonitorRenderer helper)
 	{
 		stack.pushPose();
-		stack.last().normal().load(Matrix3f.createScaleMatrix(1.0F, -1.0F, 1.0F));
+		stack.last().normal().set(new Matrix3f().scaling(1.0F, -1.0F, 1.0F));
 		helper.renderGuiItems(stack, item, x, y);
 		if(showCount)
 		{
@@ -49,20 +49,20 @@ public class ItemDisplayInfo implements IDisplayInfo
 		}
 		stack.popPose();
 	}
-	
+
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public int getHeight(int width, Alignment align)
 	{
 		return 18;
 	}
-	
+
 	@Override
 	public boolean isValid()
 	{
 		return aliveProvider.getAsBoolean();
 	}
-	
+
 	@Override
 	public void serialize(FriendlyByteBuf buffer)
 	{
@@ -71,7 +71,7 @@ public class ItemDisplayInfo implements IDisplayInfo
 		buffer.writeItem(stack);
 		if(showCount) buffer.writeVarInt(stack.getCount());
 	}
-	
+
 	@Override
 	public Tag getServerData()
 	{
@@ -81,5 +81,5 @@ public class ItemDisplayInfo implements IDisplayInfo
 		else data.remove("Count");
 		return data;
 	}
-	
+
 }

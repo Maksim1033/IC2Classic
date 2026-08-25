@@ -23,13 +23,13 @@ public class StringDisplayInfo implements IDisplayInfo
 	Component comp;
 	Supplier<Component> textProvider;
 	BooleanSupplier aliveProvider;
-	
+
 	public StringDisplayInfo(Supplier<Component> textProvider, BooleanSupplier aliveProvider)
 	{
 		this.textProvider = textProvider;
 		this.aliveProvider = aliveProvider;
 	}
-	
+
 	public StringDisplayInfo(FriendlyByteBuf buffer)
 	{
 		comp = buffer.readComponent();
@@ -44,11 +44,11 @@ public class StringDisplayInfo implements IDisplayInfo
 		for(FormattedCharSequence sub : font.split(comp, width))
 		{
 			if(height - heightConsumed < font.lineHeight) return;
-		    font.drawInBatch(sub, x-align.getXOffset(font.width(sub)), y+heightConsumed, -1, false, stack.last().pose(), helper.getBatcher(), false, 0, 15728880);
+		    font.drawInBatch(sub, x-align.getXOffset(font.width(sub)), y+heightConsumed, -1, false, stack.last().pose(), helper.getBatcher(), net.minecraft.client.gui.Font.DisplayMode.NORMAL, 0, 15728880);
 		    heightConsumed += font.lineHeight;
 		}
 	}
-	
+
 	@Override
 	@OnlyIn(Dist.CLIENT)
 	public int getHeight(int width, Alignment align)
@@ -56,19 +56,19 @@ public class StringDisplayInfo implements IDisplayInfo
 		Font font = Minecraft.getInstance().font;
 		return font.getSplitter().splitLines(comp, width, Style.EMPTY).size() * font.lineHeight;
 	}
-	
+
 	@Override
 	public boolean isValid()
 	{
 		return aliveProvider.getAsBoolean();
 	}
-	
+
 	@Override
 	public Tag getServerData()
 	{
 		return StringTag.valueOf(textProvider.get().getString());
 	}
-	
+
 	@Override
 	public void serialize(FriendlyByteBuf buffer)
 	{

@@ -21,13 +21,13 @@ public interface IInput
 		List<ItemStack> stacks = getComponents();
 		return Ingredient.of(stacks.toArray(new ItemStack[stacks.size()]));
 	}
-	
+
 	List<ItemStack> getComponents();
-	
+
 	int getInputSize();
-	
+
 	boolean matches(ItemStack stack);
-	
+
 	default boolean matchesAll(ItemStack... stacks)
 	{
 		for(ItemStack stack : stacks)
@@ -39,7 +39,7 @@ public interface IInput
 		}
 		return true;
 	}
-	
+
 	default boolean matchesAny(ItemStack... stacks)
 	{
 		for(ItemStack stack : stacks)
@@ -51,10 +51,10 @@ public interface IInput
 		}
 		return false;
 	}
-	
+
 	void serialize(FriendlyByteBuf buffer);
 	JsonObject serialize();
-	
+
 	static JsonObject writeItemStack(ItemStack stack, boolean includeSize)
 	{
 		JsonObject obj = new JsonObject();
@@ -67,7 +67,7 @@ public interface IInput
 		}
 		return obj;
 	}
-	
+
 	static JsonObject writeFluidStack(FluidStack stack)
 	{
 		JsonObject obj = new JsonObject();
@@ -76,14 +76,14 @@ public interface IInput
 		if(stack.hasTag()) {
 			obj.addProperty("nbt", stack.getTag().toString());
 		}
-		return obj;		
+		return obj;
 	}
-	
+
 	static FluidStack readFluidStack(JsonObject obj)
 	{
 		return new FluidStack(ForgeRegistries.FLUIDS.getValue(ResourceLocation.tryParse(obj.get("fluid").getAsString())), obj.get("amount").getAsInt(), obj.has("nbt") ? readNBT(obj.get("nb").getAsString()) : null);
 	}
-	
+
 	static CompoundTag readNBT(String s)
 	{
 		try
@@ -95,19 +95,19 @@ public interface IInput
 			return null;
 		}
 	}
-	
+
 	static ItemStack copyWithSize(ItemStack stack, int newSize)
 	{
 		ItemStack copy = stack.copy();
 		copy.setCount(newSize);
 		return copy;
 	}
-	
+
 	static boolean isStackEqual(ItemStack key, ItemStack other)
 	{
-		return key.sameItem(other) && isNBTExact(key, other);
+		return key.is(other.getItem()) && isNBTExact(key, other);
 	}
-	
+
 	static boolean isNBTExact(ItemStack subject, ItemStack target)
 	{
 		boolean key = subject.hasTag();

@@ -19,74 +19,74 @@ public class SubItemInput implements IInput
 	Item item;
 	int size;
 	Ingredient ingredient;
-	
+
 	public SubItemInput(JsonObject obj)
 	{
 		this(ForgeRegistries.ITEMS.getValue(ResourceLocation.tryParse(obj.get("item").getAsString())), obj.get("size").getAsInt());
 	}
-	
+
 	public SubItemInput(FriendlyByteBuf buffer)
 	{
 		this(Item.byId(buffer.readVarInt()), buffer.readByte());
 	}
-	
+
 	public SubItemInput(ItemLike prov, int size)
 	{
 		this(prov.asItem(), size);
 	}
-	
+
 	public SubItemInput(Item item, int size)
 	{
 		this.item = item;
 		this.size = size;
 		NonNullList<ItemStack> items = NonNullList.create();
-		item.fillItemCategory(CreativeModeTab.TAB_SEARCH, items);
+		// item.fillItemCategory(null /* TODO 1.20 tabs */, items);
 		ingredient = Ingredient.of(items.toArray(new ItemStack[items.size()]));
 	}
-	
+
 	public SubItemInput(ItemLike prov)
 	{
 		this(prov.asItem());
 	}
-	
+
 	public SubItemInput(Item item)
 	{
 		this(item, 1);
 	}
-	
+
 	@Override
 	public Ingredient asIngredient()
 	{
 		return ingredient;
 	}
-	
+
 	@Override
 	public List<ItemStack> getComponents()
 	{
 		NonNullList<ItemStack> items = NonNullList.create();
-		item.fillItemCategory(CreativeModeTab.TAB_SEARCH, items);
+		// item.fillItemCategory(null /* TODO 1.20 tabs */, items);
 		return items;
 	}
-	
+
 	@Override
 	public int getInputSize()
 	{
 		return size;
 	}
-	
+
 	@Override
 	public boolean matches(ItemStack stack)
 	{
 		return stack.getItem() == item;
 	}
-	
+
 	@Override
 	public void serialize(FriendlyByteBuf buffer)
 	{
 		buffer.writeVarInt(Item.getId(item));
 		buffer.writeByte(size);
 	}
-	
+
 	@Override
 	public JsonObject serialize()
 	{
